@@ -1,0 +1,87 @@
+- name: configure catalogue component
+  hosts: catalogue
+  vars:
+    username: roboshop
+  tasks:
+  - name: Install NodeJS, By default NodeJS 16 is available, We would like to enable 20 version and install list.
+    ansible.builtin.command: dnf module disable nodejs -y
+
+  - name: Enable required nodeJs module
+    ansible.builtin.command: dnf module enable nodejs:20 -y
+
+  - name: Install NodeJS
+    ansible.builtin.package:
+      name: nodejs 
+      state: present
+
+  - name: Create a directory for roboshop user
+    ansible.builtin.file:
+      path: /app
+      state: directory
+
+  - name: Add application User
+    ansible.builtin.user:
+      name: roboshop
+      system: true
+      home: /app
+      # create_home: no
+      shell: /sbin/nologin
+
+  # - name: Set user home directory
+  #   user:
+  #     name: "{{ username }}"
+  #     # home: /home/{{ username }}  ---> this is the normal way to give a directory to the user.
+  #     home: /app
+
+  - name: Download the application code to created app directory.
+    ansible.builtin.get_url:
+      url: https://roboshop-artifacts.s3.amazonaws.com/catalogue-v3.zip
+      dest: /tmp/catalogue.zip
+
+  - name: unzip the downloaded files into 
+    ansible.builtin.unarchive:
+      src: /tmp/catalogue.zip
+      dest: /app
+      remote_src: yes
+
+  - name: install dependencies
+    community.general.npm:
+      path: /app
+
+  - name: copy catalogue service file to /etc/systemd/system/catalogue.service
+    ansible.builtin.copy:
+      src: catalogue.service
+      dest: /etc/systemd/system/catalogue.service
+
+  - name: reload the catalogue service
+    ansible.builtin.systemd_service:
+      daemon_reload: true
+      name: catalogue # --------->
+
+  - name: start and enable the catalogue service
+    ansible.builtin.service:
+      name: catalogue
+      state: started
+      enabled: yes
+
+  - name: copy mongo repo file to /etc/yum.repos.d/mongo.repo
+    ansible.builtin.copy:
+      src: mongo.repo
+      dest: /etc/yum.repos.d/mongo.repo
+
+  - name: install mongodb-mongosh client
+    ansible.builtin.package:
+      name: mongodb-mongosh
+      state: present
+
+  - name: check if the master data is loaded or not into the mongo server
+    ansible.builtin.command: mongosh --host mongodb.daws84s.site --eval 'db.getMongo().getDBNames().indexOf("catalogue")'
+    register: load_check
+
+  - name: check the data is loaded or not
+    ansible.builtin.debug:
+      msg: "{{ load_check }}"
+
+  - name: load products
+    ansible.builtin.shell: mongosh --host mongodb.daws84s.site < /app/db/master-data.js
+    when: catalogue_output.stdout | int < 0
