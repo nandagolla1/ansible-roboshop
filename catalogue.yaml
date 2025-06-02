@@ -75,7 +75,7 @@
       state: present
 
   - name: check if the master data is loaded or not into the mongo server
-    ansible.builtin.command: mongosh --host mongodb.daws84s.site --eval 'db.getMongo().getDBNames().indexOf("catalogue")'
+    ansible.builtin.command: mongosh --host 172.31.42.18 --eval 'db.getMongo().getDBNames().indexOf("catalogue")'
     register: load_check
 
   - name: check the data is loaded or not
@@ -83,5 +83,5 @@
       msg: "{{ load_check }}"
 
   - name: load products
-    ansible.builtin.shell: mongosh --host mongodb.daws84s.site < /app/db/master-data.js
+    ansible.builtin.shell: mongosh --host 172.31.42.18 < /app/db/master-data.js
     when: catalogue_output.stdout | int < 0
