@@ -1,5 +1,5 @@
 - name: install mongodb server
-  hosts: frontend
+  hosts: mongodb
   become: yes
 
   tasks:
