@@ -84,4 +84,4 @@
 
   - name: load products
     ansible.builtin.shell: mongosh --host 172.31.42.18 < /app/db/master-data.js
-    when: catalogue_output.stdout | int < 0
+    when: load_check.stdout | int < 0
