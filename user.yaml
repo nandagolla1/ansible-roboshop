@@ -1,0 +1,67 @@
+- name: configure user component
+  hosts: user
+  become: yes
+  vars:
+    username: roboshop
+  tasks:
+  - name: Disable default NodeJS module.
+    ansible.builtin.command: dnf module disable nodejs -y
+
+  - name: Enable required nodeJs module
+    ansible.builtin.command: dnf module enable nodejs:20 -y
+
+  - name: Install NodeJS
+    ansible.builtin.package:
+      name: nodejs 
+      state: present
+
+  - name: Create a directory for roboshop user
+    ansible.builtin.file:
+      path: /app
+      state: directory
+
+  - name: Add application User
+    ansible.builtin.user:
+      name: roboshop
+      system: true
+      home: /app
+      # create_home: no
+      shell: /sbin/nologin
+
+  # - name: Set user home directory
+  #   user:
+  #     name: "{{ username }}"
+  #     # home: /home/{{ username }}  ---> this is the normal way to give a directory to the user.
+  #     home: /app
+
+  - name: Download the application code to created app directory.
+    ansible.builtin.get_url:
+      url: https://roboshop-artifacts.s3.amazonaws.com/user-v3.zip
+      dest: /tmp/user.zip
+
+  - name: unzip the downloaded files into user app directory
+    ansible.builtin.unarchive:
+      src: /tmp/user.zip
+      dest: /app
+      remote_src: yes
+
+  - name: install dependencies
+    community.general.npm:
+      path: /app
+
+  - name: copy user service file to /etc/systemd/system/user.service
+    ansible.builtin.copy:
+      src: user.service
+      dest: /etc/systemd/system/user.service
+
+  - name: reload the user service
+    ansible.builtin.systemd_service:
+      daemon_reload: true
+      name: user # --------->
+
+  - name: start and enable the user service
+    ansible.builtin.service:
+      name: user
+      state: started
+      enabled: yes
+
