@@ -1,5 +1,6 @@
 - name: configure catalogue component
   hosts: catalogue
+  become: yes
   vars:
     username: roboshop
   tasks:
@@ -38,7 +39,7 @@
       url: https://roboshop-artifacts.s3.amazonaws.com/catalogue-v3.zip
       dest: /tmp/catalogue.zip
 
-  - name: unzip the downloaded files into 
+  - name: unzip the downloaded files into user app directory
     ansible.builtin.unarchive:
       src: /tmp/catalogue.zip
       dest: /app
