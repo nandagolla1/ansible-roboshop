@@ -3,7 +3,7 @@
   vars:
     username: roboshop
   tasks:
-  - name: Install NodeJS, By default NodeJS 16 is available, We would like to enable 20 version and install list.
+  - name: Disable default NodeJS module.
     ansible.builtin.command: dnf module disable nodejs -y
 
   - name: Enable required nodeJs module
