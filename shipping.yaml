@@ -38,6 +38,8 @@
 
   - name: rename the target jar folder
     ansible.builtin.command: mv target/shipping-1.0.jar shipping.jar 
+    args:
+      chdir: /app
 
   - name: copy the shipping service file
     ansible.builtin.copy:
@@ -58,4 +60,3 @@
     ansible.builtin.package:
       name: mysql
       state: present
-      
