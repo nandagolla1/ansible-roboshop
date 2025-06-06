@@ -71,6 +71,7 @@
     community.mysql.mysql_query:
       login_user: root
       login_password: RoboShop@1
+      login_host: mysql.nanda.cyou
       query: SELECT User FROM mysql.user WHERE User = 'shipping';
     register: is_user_present
 
