@@ -66,17 +66,35 @@
       name: PyMySQL
       state: present 
 #-----------------------------------------------------------------
-  - name: Check if MySQL user shipping exists
-    community.mysql.mysql_user_info:
-      name: shipping
+
+  - name: Check if MySQL user 'shipping' exists
+    community.mysql.mysql_query:
       login_user: root
       login_password: RoboShop@1
+      query: SELECT User FROM mysql.user WHERE User = 'shipping';
     register: is_user_present
 
   - name: Print if shipping exists
     debug:
-      msg: User shipping exists
-    when: is_user_present.users | length > 0
+      msg: "✅ User 'shipping' exists"
+    when: is_user_present.query_result[0] | length > 0
+
+  - name: Print if shipping does not exist
+    debug:
+      msg: "❌ User 'shipping' does NOT exist"
+    when: is_user_present.query_result[0] | length == 0
+
+  # - name: Check if MySQL user shipping exists
+  #   community.mysql.mysql_user_info:
+  #     name: shipping
+  #     login_user: root
+  #     login_password: RoboShop@1
+  #   register: is_user_present
+
+  # - name: Print if shipping exists
+  #   debug:
+  #     msg: User shipping exists
+  #   when: is_user_present.users | length > 0
 
   # - name: Print if sally exists
   #   ansible.builtin.
