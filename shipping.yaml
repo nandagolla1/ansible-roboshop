@@ -92,7 +92,7 @@
     community.mysql.mysql_info:
       login_user: shipping
       login_password: RoboShop@1
-      login_host: mysql.daws84s.site
+      login_host: mysql.nanda.cyou
       login_db: cities
     when: is_user_present.query_result[0] | length > 0
     register: db_connection
@@ -105,7 +105,7 @@
       name: all
       login_user: root
       login_password: RoboShop@1
-      login_host: mysql.daws84s.site
+      login_host: mysql.nanda.cyou
       state: import
       target: "{{ item }}"
     loop:
@@ -118,7 +118,7 @@
       name: all
       login_user: root
       login_password: RoboShop@1
-      login_host: mysql.daws84s.site
+      login_host: mysql.nanda.cyou
       state: import
       target: "{{ item }}"
     loop:
