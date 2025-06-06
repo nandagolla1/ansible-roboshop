@@ -14,7 +14,7 @@
       state: :present
 
   - name: Start & Enable Nginx service
-    ansible.debug.service:
+    ansible.builtin.service:
       name: nginx
       state: started
       enabled: yes
