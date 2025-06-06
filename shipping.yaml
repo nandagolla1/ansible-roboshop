@@ -63,8 +63,11 @@
 
   - name: install mysql client
     ansible.builtin.pip:
-      name: PyMySQL
+      name: "{{ item }}"
       state: present 
+    loop:
+    - PyMySQL
+    - cryptography
 #-----------------------------------------------------------------
 
   - name: Check if MySQL user 'shipping' exists
