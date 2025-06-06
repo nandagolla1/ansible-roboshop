@@ -60,3 +60,19 @@
     ansible.builtin.package:
       name: mysql
       state: present
+#-----------------------------------------------------------------
+  - name: Check if MySQL user 'shipping' exists
+    community.mysql.mysql_user_info:
+      name: sally
+      login_user: root
+      login_password: RoboShop@1
+    register: is_user_present
+
+  - name: Print if sally exists
+    debug:
+      msg: "User 'sally' exists!"
+    when: sally_info.users | length > 0
+
+  # - name: Print if sally exists
+  #   ansible.builtin.
+  #   when: sally_info.users | length <= 0
