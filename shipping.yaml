@@ -60,6 +60,11 @@
     ansible.builtin.package:
       name: mysql
       state: present
+
+  - name: install mysql client
+    ansible.builtin.package:
+      name: PyMySQL
+      state: present 
 #-----------------------------------------------------------------
   - name: Check if MySQL user shipping exists
     community.mysql.mysql_user_info:
