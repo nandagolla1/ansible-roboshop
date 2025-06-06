@@ -99,36 +99,38 @@
     ignore_errors: yes
 
   - name: creating user in mysql db
-  tags:
-  - import_user
-  community.mysql.mysql_db:
-    name: all
-    login_user: root
-    login_password: RoboShop@1
-    login_host: mysql.daws84s.site
-    state: import
-    target: "{{ item }}"
-  loop:
-  - /app/db/app-user.sql
+    tags:
+    - import_user
+    community.mysql.mysql_db:
+      name: all
+      login_user: root
+      login_password: RoboShop@1
+      login_host: mysql.daws84s.site
+      state: import
+      target: "{{ item }}"
+    loop:
+    - /app/db/app-user.sql
 
   - name: creating DB and load data
-  tags:
-  - import_DB
-  community.mysql.mysql_db:
-    name: all
-    login_user: root
-    login_password: RoboShop@1
-    login_host: mysql.daws84s.site
-    state: import
-    target: "{{ item }}"
-  loop:
-  - /app/db/schema.sql
-  - /app/db/master-data.sql
-  
+    tags:
+    - import_DB
+    community.mysql.mysql_db:
+      name: all
+      login_user: root
+      login_password: RoboShop@1
+      login_host: mysql.daws84s.site
+      state: import
+      target: "{{ item }}"
+    loop:
+    - /app/db/schema.sql
+    - /app/db/master-data.sql
+    when: db_connection.failed is defined and db_connection.failed
+
+    
   - name: restart shipping
-  tags:
-  - import
-  ansible.builtin.service:
-    state: restarted
-    name: shipping
+    tags:
+    - import
+    ansible.builtin.service:
+      state: restarted
+      name: shipping
   
