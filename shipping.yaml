@@ -61,7 +61,7 @@
       name: mysql
       state: present
 
-  - name: install mysql client
+  - name: install python libraries to connect sql server
     ansible.builtin.pip:
       name: "{{ item }}"
       state: present 
@@ -88,18 +88,48 @@
       msg: "❌ User 'shipping' does NOT exist"
     when: is_user_present.query_result[0] | length == 0
 
-  # - name: Check if MySQL user shipping exists
-  #   community.mysql.mysql_user_info:
-  #     name: shipping
-  #     login_user: root
-  #     login_password: RoboShop@1
-  #   register: is_user_present
+  - name: check does it able to connect 
+    community.mysql.mysql_info:
+      login_user: shipping
+      login_password: RoboShop@1
+      login_host: mysql.daws84s.site
+      login_db: cities
+    when: is_user_present.query_result[0] | length > 0
+    register: db_connection
+    ignore_errors: yes
 
-  # - name: Print if shipping exists
-  #   debug:
-  #     msg: User shipping exists
-  #   when: is_user_present.users | length > 0
+  - name: creating user in mysql db
+    tags:
+    - import_user
+    community.mysql.mysql_db:
+      name: all
+      login_user: root
+      login_password: RoboShop@1
+      login_host: mysql.daws84s.site
+      state: import
+      target: "{{ item }}"
+    loop:
+    - /app/db/app-user.sql
 
-  # - name: Print if sally exists
-  #   ansible.builtin.
-  #   when: sally_info.users | length <= 0
+    - name: creating DB and load data
+    tags:
+    - import_DB
+    community.mysql.mysql_db:
+      name: all
+      login_user: root
+      login_password: RoboShop@1
+      login_host: mysql.daws84s.site
+      state: import
+      target: "{{ item }}"
+    loop:
+    - /app/db/schema.sql
+    - /app/db/master-data.sql
+    
+
+    - name: restart shipping
+    tags:
+    - import
+    ansible.builtin.service:
+      state: restarted
+      name: shipping
+  
