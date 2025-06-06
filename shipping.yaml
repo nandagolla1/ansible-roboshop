@@ -110,6 +110,7 @@
       target: "{{ item }}"
     loop:
     - /app/db/app-user.sql
+    when: is_user_present.query_result[0] | length == 0
 
   - name: creating DB and load data
     tags:
