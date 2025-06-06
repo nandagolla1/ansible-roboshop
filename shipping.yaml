@@ -61,9 +61,9 @@
       name: mysql
       state: present
 #-----------------------------------------------------------------
-  - name: Check if MySQL user 'shipping' exists
+  - name: Check if MySQL user shipping exists
     community.mysql.mysql_user_info:
-      name: sally
+      name: shipping
       login_user: root
       login_password: RoboShop@1
     register: is_user_present
