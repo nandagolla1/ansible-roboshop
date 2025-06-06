@@ -62,7 +62,7 @@
       state: present
 
   - name: install mysql client
-    ansible.builtin.package:
+    ansible.builtin.pip:
       name: PyMySQL
       state: present 
 #-----------------------------------------------------------------
