@@ -73,10 +73,10 @@
       login_password: RoboShop@1
     register: is_user_present
 
-  - name: Print if sally exists
+  - name: Print if shipping exists
     debug:
-      msg: "User 'sally' exists!"
-    when: sally_info.users | length > 0
+      msg: User shipping exists
+    when: is_user_present.users | length > 0
 
   # - name: Print if sally exists
   #   ansible.builtin.
